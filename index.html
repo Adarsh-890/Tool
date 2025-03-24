@@ -5,112 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Service Finder</title>
     <style>
+        :root {
+            --primary-color: #2F80ED;
+            --secondary-color: #27AE60;
+            --text-color: #333;
+            --background-color: #f7f9fc;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
 
-        header {
-            text-align: center;
-            padding: 20px;
-            background-color: #007BFF;
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-        }
-
-        #search {
+            padding: 1rem;
             text-align: center;
-            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        #searchBar {
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
+        .search-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input, select, button {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
         }
 
         button {
-            padding: 10px 20px;
-            background-color: #28a745;
+            background-color: var(--primary-color);
             color: white;
-            border: none;
             cursor: pointer;
         }
 
-        button:hover {
-            background-color: #218838;
-        }
-
-        #profiles {
-            padding: 20px;
-            text-align: center;
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 1rem;
         }
 
         .profile-card {
-            background-color: white;
-            padding: 15px;
-            margin: 10px auto;
-            width: 300px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .booking-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .rating-stars {
+            color: #FFD700;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Run HTML button */
+        .run-html-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .run-html-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Local Service Finder</h1>
-        <p>Apne area ke professionals dhoondhein, number dikhe bina!</p>
+    <header class="main-header">
+        <h1>Find Local Service Providers</h1>
+        <p>Connect directly with trusted professionals</p>
     </header>
 
-    <section id="search">
-        <input type="text" id="searchBar" placeholder="Profession ya City daalein...">
-        <button onclick="searchProfession()">Search</button>
-    </section>
-
-    <section id="profiles">
-        <h2>Available Professionals</h2>
-        <div id="profileList">
-            <!-- Profiles yahan dynamically add honge -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search for a service or profession...">
+            <select id="citySelect">
+                <option value="">Select City</option>
+                <option>Delhi</option>
+                <option>Mumbai</option>
+                <option>Bangalore</option>
+            </select>
+            <select id="categorySelect">
+                <option value="">Select Category</option>
+                <option>Electrician</option>
+                <option>Plumber</option>
+                <option>Computer Repair</option>
+            </select>
+            <button onclick="searchProfessionals()">Search</button>
         </div>
-    </section>
+    </div>
+
+    <div class="profiles-grid" id="profilesContainer"></div>
+
+    <div class="booking-modal" id="bookingModal">
+        <div class="modal-content">
+            <h3>Service Request Form</h3>
+            <form id="bookingForm">
+                <input type="text" placeholder="Your Name" required>
+                <input type="tel" placeholder="Mobile Number" required>
+                <textarea placeholder="Describe your issue"></textarea>
+                <button type="submit">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="run-html-container">
+        <button class="run-html-btn" onclick="runHTML()">Run HTML</button>
+    </div>
 
     <script>
-        // Dummy data for testing
         const professionals = [
-            { name: "Ramesh Kumar", profession: "Website Developer", city: "Delhi" },
-            { name: "Suresh Patel", profession: "TV Repair", city: "Mumbai" },
-            { name: "Priya Sharma", profession: "Graphic Designer", city: "Bangalore" }
+            {
+                name: "Ramesh Kumar",
+                profession: "Electrician",
+                city: "Delhi",
+                rating: 4.8,
+                experience: "5 years",
+                charges: "₹500/call",
+                availability: "10 AM - 7 PM"
+            },
+            {
+                name: "Suresh Patel",
+                profession: "Plumber",
+                city: "Mumbai",
+                rating: 4.5,
+                experience: "8 years",
+                charges: "₹700/call",
+                availability: "24x7"
+            }
         ];
 
-        function searchProfession() {
-            const searchValue = document.getElementById("searchBar").value.toLowerCase();
-            const profileList = document.getElementById("profileList");
-            profileList.innerHTML = ""; // Clear previous results
-
-            const filtered = professionals.filter(pro => 
-                pro.profession.toLowerCase().includes(searchValue) || 
-                pro.city.toLowerCase().includes(searchValue)
-            );
-
-            filtered.forEach(pro => {
-                const card = document.createElement("div");
-                card.className = "profile-card";
-                card.innerHTML = `
+        function renderProfiles(professionals) {
+            const container = document.getElementById('profilesContainer');
+            container.innerHTML = professionals.map(pro => `
+                <div class="profile-card">
                     <h3>${pro.name}</h3>
-                    <p>Profession: ${pro.profession}</p>
-                    <p>City: ${pro.city}</p>
-                    <button onclick="alert('Call connected! Number hidden.')">Call Now</button>
-                `;
-                profileList.appendChild(card);
+                    <div class="profile-details">
+                        <p>Profession: ${pro.profession}</p>
+                        <p>City: ${pro.city}</p>
+                        <p>Experience: ${pro.experience}</p>
+                        <p>Charges: ${pro.charges}</p>
+                        <p>Availability: ${pro.availability}</p>
+                        <div class="rating-stars">${'★'.repeat(Math.floor(pro.rating))}${'☆'.repeat(5-Math.floor(pro.rating))}</div>
+                    </div>
+                    <button onclick="showBookingForm('${pro.name}')">Book Now</button>
+                    <button onclick="showReviews('${pro.name}')">View Reviews</button>
+                </div>
+            `).join('');
+        }
+
+        function searchProfessionals() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const city = document.getElementById('citySelect').value;
+            const category = document.getElementById('categorySelect').value;
+
+            const filtered = professionals.filter(pro => {
+                const matchesSearch = pro.profession.toLowerCase().includes(searchTerm) || 
+                                    pro.city.toLowerCase().includes(searchTerm);
+                const matchesCity = city ? pro.city === city : true;
+                const matchesCategory = category ? pro.profession === category : true;
+                
+                return matchesSearch && matchesCity && matchesCategory;
             });
 
-            if (filtered.length === 0) {
-                profileList.innerHTML = "<p>Koi result nahi mila!</p>";
+            renderProfiles(filtered);
+        }
+
+        function showBookingForm(professionalName) {
+            const modal = document.getElementById('bookingModal');
+            modal.style.display = 'flex';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
             }
         }
 
-        // Initial load
-        searchProfession();
+        function runHTML() {
+            alert("HTML is running!");
+        }
+
+        renderProfiles(professionals);
     </script>
 </body>
 </html>
