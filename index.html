@@ -5,244 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Service Finder</title>
     <style>
-        :root {
-            --primary-color: #2F80ED;
-            --secondary-color: #27AE60;
-            --text-color: #333;
-            --background-color: #f7f9fc;
-        }
-
         body {
-            font-family: 'Poppins', Arial, sans-serif;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
             margin: 0;
             padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
         }
 
-        .main-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        header {
+            background: linear-gradient(135deg, #007bff, #00b894);
             color: white;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            font-size: 1.5em;
         }
 
-        .search-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        input, select, button {
-            padding: 12px;
+        #search-box {
+            margin: 20px;
+            padding: 10px;
+            width: 80%;
+            max-width: 400px;
             border: 2px solid #ddd;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 200px;
+            border-radius: 5px;
         }
 
-        button {
-            background-color: var(--primary-color);
+        .search-btn {
+            padding: 10px;
+            background: green;
             color: white;
-            cursor: pointer;
-        }
-
-        .profiles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 1rem;
-        }
-
-        .profile-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            text-align: center;
-        }
-
-        .profile-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .booking-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .rating-stars {
-            color: #FFD700;
-            font-size: 1.2rem;
-        }
-
-        @media (max-width: 768px) {
-            .search-box {
-                flex-direction: column;
-                align-items: stretch;
-                margin-bottom: 1rem;
-            }
-        }
-
-        /* Run HTML button */
-        .run-html-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .run-html-btn {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 10px 20px;
             border: none;
             cursor: pointer;
-            font-size: 16px;
             border-radius: 5px;
+        }
+
+        #service-list {
+            margin: 20px;
+            padding: 10px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 15px;
+            margin: 10px auto;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+            max-width: 300px;
         }
     </style>
 </head>
 <body>
-    <header class="main-header">
-        <h1>Find Local Service Providers</h1>
-        <p>Connect directly with trusted professionals</p>
+    <header>
+        <h1>Find Local Services</h1>
     </header>
 
-    <div class="search-container">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search for a service or profession...">
-            <select id="citySelect">
-                <option value="">Select City</option>
-                <option>Delhi</option>
-                <option>Mumbai</option>
-                <option>Bangalore</option>
-            </select>
-            <select id="categorySelect">
-                <option value="">Select Category</option>
-                <option>Electrician</option>
-                <option>Plumber</option>
-                <option>Computer Repair</option>
-            </select>
-            <button onclick="searchProfessionals()">Search</button>
-        </div>
-    </div>
+    <input type="text" id="search-box" placeholder="Search for services...">
+    <button class="search-btn" onclick="searchService()">Search</button>
 
-    <div class="profiles-grid" id="profilesContainer"></div>
-
-    <div class="booking-modal" id="bookingModal">
-        <div class="modal-content">
-            <h3>Service Request Form</h3>
-            <form id="bookingForm">
-                <input type="text" placeholder="Your Name" required>
-                <input type="tel" placeholder="Mobile Number" required>
-                <textarea placeholder="Describe your issue"></textarea>
-                <button type="submit">Submit Request</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="run-html-container">
-        <button class="run-html-btn" onclick="runHTML()">Run HTML</button>
-    </div>
+    <div id="service-list"></div>
 
     <script>
-        const professionals = [
-            {
-                name: "Ramesh Kumar",
-                profession: "Electrician",
-                city: "Delhi",
-                rating: 4.8,
-                experience: "5 years",
-                charges: "₹500/call",
-                availability: "10 AM - 7 PM"
-            },
-            {
-                name: "Suresh Patel",
-                profession: "Plumber",
-                city: "Mumbai",
-                rating: 4.5,
-                experience: "8 years",
-                charges: "₹700/call",
-                availability: "24x7"
-            }
+        const services = [
+            { name: "Electrician", city: "Delhi" },
+            { name: "Plumber", city: "Mumbai" },
+            { name: "Carpenter", city: "Bangalore" },
+            { name: "Painter", city: "Hyderabad" },
+            { name: "AC Repair", city: "Chennai" }
         ];
 
-        function renderProfiles(professionals) {
-            const container = document.getElementById('profilesContainer');
-            container.innerHTML = professionals.map(pro => `
-                <div class="profile-card">
-                    <h3>${pro.name}</h3>
-                    <div class="profile-details">
-                        <p>Profession: ${pro.profession}</p>
-                        <p>City: ${pro.city}</p>
-                        <p>Experience: ${pro.experience}</p>
-                        <p>Charges: ${pro.charges}</p>
-                        <p>Availability: ${pro.availability}</p>
-                        <div class="rating-stars">${'★'.repeat(Math.floor(pro.rating))}${'☆'.repeat(5-Math.floor(pro.rating))}</div>
-                    </div>
-                    <button onclick="showBookingForm('${pro.name}')">Book Now</button>
-                    <button onclick="showReviews('${pro.name}')">View Reviews</button>
-                </div>
-            `).join('');
-        }
+        function searchService() {
+            let input = document.getElementById("search-box").value.toLowerCase();
+            let list = document.getElementById("service-list");
+            list.innerHTML = "";
 
-        function searchProfessionals() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const city = document.getElementById('citySelect').value;
-            const category = document.getElementById('categorySelect').value;
-
-            const filtered = professionals.filter(pro => {
-                const matchesSearch = pro.profession.toLowerCase().includes(searchTerm) || 
-                                    pro.city.toLowerCase().includes(searchTerm);
-                const matchesCity = city ? pro.city === city : true;
-                const matchesCategory = category ? pro.profession === category : true;
-                
-                return matchesSearch && matchesCity && matchesCategory;
-            });
-
-            renderProfiles(filtered);
-        }
-
-        function showBookingForm(professionalName) {
-            const modal = document.getElementById('bookingModal');
-            modal.style.display = 'flex';
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('bookingModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
+            let filtered = services.filter(s => s.name.toLowerCase().includes(input));
+            
+            if (filtered.length === 0) {
+                list.innerHTML = "<p>No services found</p>";
+            } else {
+                filtered.forEach(service => {
+                    let div = document.createElement("div");
+                    div.className = "service-card";
+                    div.innerHTML = `<strong>${service.name}</strong><br>📍 ${service.city}`;
+                    list.appendChild(div);
+                });
             }
         }
-
-        function runHTML() {
-            alert("HTML is running!");
-        }
-
-        renderProfiles(professionals);
     </script>
 </body>
 </html>
