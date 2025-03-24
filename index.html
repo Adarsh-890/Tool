@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Service Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #007BFF;
+            color: white;
+        }
+
+        #search {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #searchBar {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #profiles {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .profile-card {
+            background-color: white;
+            padding: 15px;
+            margin: 10px auto;
+            width: 300px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Local Service Finder</h1>
+        <p>Apne area ke professionals dhoondhein, number dikhe bina!</p>
+    </header>
+
+    <section id="search">
+        <input type="text" id="searchBar" placeholder="Profession ya City daalein...">
+        <button onclick="searchProfession()">Search</button>
+    </section>
+
+    <section id="profiles">
+        <h2>Available Professionals</h2>
+        <div id="profileList">
+            <!-- Profiles yahan dynamically add honge -->
+        </div>
+    </section>
+
+    <script>
+        // Dummy data for testing
+        const professionals = [
+            { name: "Ramesh Kumar", profession: "Website Developer", city: "Delhi" },
+            { name: "Suresh Patel", profession: "TV Repair", city: "Mumbai" },
+            { name: "Priya Sharma", profession: "Graphic Designer", city: "Bangalore" }
+        ];
+
+        function searchProfession() {
+            const searchValue = document.getElementById("searchBar").value.toLowerCase();
+            const profileList = document.getElementById("profileList");
+            profileList.innerHTML = ""; // Clear previous results
+
+            const filtered = professionals.filter(pro => 
+                pro.profession.toLowerCase().includes(searchValue) || 
+                pro.city.toLowerCase().includes(searchValue)
+            );
+
+            filtered.forEach(pro => {
+                const card = document.createElement("div");
+                card.className = "profile-card";
+                card.innerHTML = `
+                    <h3>${pro.name}</h3>
+                    <p>Profession: ${pro.profession}</p>
+                    <p>City: ${pro.city}</p>
+                    <button onclick="alert('Call connected! Number hidden.')">Call Now</button>
+                `;
+                profileList.appendChild(card);
+            });
+
+            if (filtered.length === 0) {
+                profileList.innerHTML = "<p>Koi result nahi mila!</p>";
+            }
+        }
+
+        // Initial load
+        searchProfession();
+    </script>
+</body>
+</html>
